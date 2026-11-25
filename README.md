@@ -44,13 +44,13 @@ A migration inicial cria categorias, subcategorias, formas de pagamento e despes
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-Acesse <http://127.0.0.1:8000>. A documentação da API fica em <http://127.0.0.1:8000/docs>.
+Acesse <http://127.0.0.1:8000>. O gerenciamento visual de categorias fica em <http://127.0.0.1:8000/categories>. A documentação da API fica em <http://127.0.0.1:8000/docs>.
 
 ## Endpoints disponíveis
 
 - `GET /health` — disponibilidade da aplicação.
 - `GET /health/db` — testa conexão com PostgreSQL.
-- `GET /api/categories` — lista categorias e subcategorias.
+- `GET /api/categories` — lista categorias e subcategorias.\n- Interface `/categories` — cria e edita categorias, cores e subcategorias.
 - `POST /api/categories` — cria categoria e sua primeira subcategoria na mesma operação.
 - `PATCH /api/categories/{id}` — altera nome ou cor da categoria.
 - `POST /api/categories/{id}/subcategories` — adiciona subcategoria.

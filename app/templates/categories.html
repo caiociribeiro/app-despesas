@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Categorias · {{ app_name }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='/css/app.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="/" aria-label="AppDespesas - Início"><span class="brand-mark">A</span><span>AppDespesas</span></a>
+      <nav class="main-nav" aria-label="Navegação principal">
+        <a class="nav-link" href="/"><span>⌂</span> Início</a>
+        <a class="nav-link active" href="/categories"><span>▦</span> Categorias</a>
+      </nav>
+      <div class="sidebar-bottom"><span class="connection-dot"></span><span>Dados na nuvem</span></div>
+    </aside>
+    <main class="main-content">
+      <header class="topbar">
+        <div><p class="eyebrow">ORGANIZAÇÃO DOS GASTOS</p><h1>Categorias</h1><p class="muted page-intro">Organize suas despesas por categoria e subcategoria.</p></div>
+        <button class="icon-button" id="theme-toggle" type="button" aria-label="Alternar tema" title="Alternar tema">◐</button>
+      </header>
+      <section class="category-toolbar">
+        <div><h2>Suas categorias</h2><p class="muted">As subcategorias herdam a cor da categoria.</p></div>
+        <button class="primary-button" id="open-category-form" type="button">＋ Nova categoria</button>
+      </section>
+      <p class="page-error" id="page-error" role="alert" hidden></p>
+      <section id="categories-list" class="categories-list" aria-live="polite">
+        <div class="empty-state">Carregando categorias...</div>
+      </section>
+    </main>
+  </div>
+
+  <dialog class="expense-dialog" id="category-dialog">
+    <form id="category-form" class="dialog-form">
+      <div class="dialog-heading"><div><p class="eyebrow" id="category-form-eyebrow">NOVA CLASSIFICAÇÃO</p><h2 id="category-dialog-title">Criar categoria</h2></div><button class="icon-button" id="close-category-form" type="button" aria-label="Fechar">×</button></div>
+      <label>Nome da categoria<input name="name" maxlength="80" required placeholder="Ex.: Alimentação"></label>
+      <label class="color-field">Cor da categoria<input name="color" id="category-color" type="color" value="#64748B" required></label>
+      <label>Primeira subcategoria<input name="initial_subcategory" maxlength="80" required placeholder="Ex.: Restaurantes"></label>
+      <p class="muted">Uma categoria precisa ter pelo menos uma subcategoria.</p>
+      <p class="form-error" id="category-form-error" role="alert" hidden></p>
+      <div class="dialog-actions"><button class="secondary-button" id="cancel-category-form" type="button">Cancelar</button><button class="primary-button" id="save-category" type="submit">Salvar categoria</button></div>
+    </form>
+  </dialog>
+
+  <dialog class="expense-dialog" id="edit-category-dialog">
+    <form id="edit-category-form" class="dialog-form">
+      <div class="dialog-heading"><div><p class="eyebrow">CONFIGURAÇÃO</p><h2>Editar categoria</h2></div><button class="icon-button" id="close-edit-category" type="button" aria-label="Fechar">×</button></div>
+      <label>Nome<input name="name" maxlength="80" required></label>
+      <label class="color-field">Cor<input name="color" id="edit-category-color" type="color" required></label>
+      <p class="form-error" id="edit-category-error" role="alert" hidden></p>
+      <div class="dialog-actions"><button class="secondary-button" id="cancel-edit-category" type="button">Cancelar</button><button class="primary-button" type="submit">Salvar alterações</button></div>
+    </form>
+  </dialog>
+
+  <dialog class="expense-dialog" id="subcategory-dialog">
+    <form id="subcategory-form" class="dialog-form">
+      <div class="dialog-heading"><div><p class="eyebrow">CLASSIFICAÇÃO</p><h2>Nova subcategoria</h2></div><button class="icon-button" id="close-subcategory" type="button" aria-label="Fechar">×</button></div>
+      <p class="muted" id="subcategory-parent"></p>
+      <label>Nome<input name="name" maxlength="80" required placeholder="Ex.: Supermercado"></label>
+      <p class="form-error" id="subcategory-error" role="alert" hidden></p>
+      <div class="dialog-actions"><button class="secondary-button" id="cancel-subcategory" type="button">Cancelar</button><button class="primary-button" type="submit">Adicionar</button></div>
+    </form>
+  </dialog>
+  <script src="{{ url_for('static', path='/js/categories.js') }}" defer></script>
+</body>
+</html>

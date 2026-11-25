@@ -26,3 +26,8 @@ app.include_router(dashboard_router)
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
     return templates.TemplateResponse(request=request, name="index.html", context={"app_name": APP_NAME})
+
+
+@app.get("/categories", response_class=HTMLResponse)
+def categories_page(request: Request):
+    return templates.TemplateResponse(request=request, name="categories.html", context={"app_name": APP_NAME})
