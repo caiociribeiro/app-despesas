@@ -1,28 +1,42 @@
 # AppDespesas
 
-Aplicação web local para controle pessoal de despesas. A interface e o backend executam no computador; os dados são armazenados no PostgreSQL hospedado no Neon.
+Aplicação web local para controle pessoal de despesas. O backend e a interface executam no computador; os dados são armazenados em PostgreSQL hospedado no Neon. O sistema exige conexão com a internet e não mantém banco financeiro local.
 
-## Requisitos
+## Stack
 
-- Python 3.11 ou superior (recomendado)
-- PostgreSQL acessível pela internet (Neon)
+- Python 3.11+
+- FastAPI + Uvicorn
+- HTML, CSS, JavaScript e Jinja2
+- SQLAlchemy 2 + psycopg 3
+- PostgreSQL (Neon)
+- Alembic para migrations
 
-## Configuração
+## Configuração no Windows (PowerShell)
 
-1. Crie e ative um ambiente virtual.
-2. Instale as dependências: `pip install -r requirements.txt`.
-3. Copie `.env.example` para `.env` (no Windows PowerShell: `Copy-Item .env.example .env`).
-4. No arquivo `.env`, preencha `DATABASE_URL` com a connection string do Neon.
-
-Use a URL no formato SQLAlchemy com psycopg 3:
-
-```text
-postgresql+psycopg://USUARIO:SENHA@HOST/BANCO?sslmode=require
+```powershell
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+Copy-Item .env.example .env
 ```
 
-Se o Neon fornecer `postgresql://...`, também pode colar a URL como veio: a aplicação converte o esquema para `postgresql+psycopg://` automaticamente.
+Preencha `DATABASE_URL` no `.env` com a connection string do Neon. Exemplo de formato:
 
-**Não** coloque a URL no código Python, em arquivos versionados ou em mensagens públicas. O arquivo `.env` está ignorado pelo Git.
+```text
+postgresql+psycopg://USUARIO:SENHA@HOST/appdespesas?sslmode=require
+```
+
+Não compartilhe nem versione o `.env`.
+
+## Criar/atualizar o banco
+
+Depois de configurar a conexão:
+
+```powershell
+alembic upgrade head
+```
+
+A migration inicial cria categorias, subcategorias, formas de pagamento e despesas. Também insere as formas de pagamento iniciais: PIX, Boleto, Cartão de crédito, Cartão de débito e Dinheiro / Outro.
 
 ## Executar
 
@@ -30,26 +44,33 @@ Se o Neon fornecer `postgresql://...`, também pode colar a URL como veio: a apl
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-Abra <http://127.0.0.1:8000>. A documentação da API fica em <http://127.0.0.1:8000/docs>.
+Acesse <http://127.0.0.1:8000>. A documentação da API fica em <http://127.0.0.1:8000/docs>.
 
-## Verificações
+## Endpoints disponíveis
 
-- `GET /health`: verifica se a aplicação está respondendo.
-- `GET /health/db`: executa `SELECT 1` no PostgreSQL e verifica a conexão.
+- `GET /health` — disponibilidade da aplicação.
+- `GET /health/db` — testa conexão com PostgreSQL.
+- `GET /api/categories` — lista categorias e subcategorias.
+- `POST /api/categories` — cria categoria e sua primeira subcategoria na mesma operação.
+- `PATCH /api/categories/{id}` — altera nome ou cor da categoria.
+- `POST /api/categories/{id}/subcategories` — adiciona subcategoria.
+- `DELETE /api/categories/subcategories/{id}` — remove subcategoria, desde que não seja a última nem tenha despesas vinculadas.
+- `GET/POST /api/payment-methods` — consulta e cadastra formas de pagamento.
+- `GET/POST /api/expenses` — consulta e cadastra despesas.
+- `PATCH/DELETE /api/expenses/{id}` — altera ou remove despesa.
+- `GET /api/dashboard/monthly` — total do mês e últimas despesas.
 
-## Migrations
+Valores monetários são armazenados em centavos inteiros. A despesa referencia uma subcategoria; a categoria é obtida pelo relacionamento da subcategoria, evitando inconsistências entre categoria e subcategoria.
 
-Depois de configurar `DATABASE_URL`:
+## Testes
 
 ```powershell
-alembic revision --autogenerate -m "initial schema"
-alembic upgrade head
+pytest
 ```
 
-O primeiro comando só deverá ser executado depois que os primeiros modelos SQLAlchemy forem criados em `app/models/`.
+## Segurança e backup
 
-## Segurança e backups
-
+- O servidor local deve permanecer vinculado a `127.0.0.1`.
 - Nunca faça commit do `.env`.
-- Restrinja a conexão do banco e mantenha TLS habilitado (`sslmode=require`).
+- A conexão com o Neon deve usar TLS (`sslmode=require`).
 - Configure backups independentes do provedor antes de inserir dados financeiros importantes.
