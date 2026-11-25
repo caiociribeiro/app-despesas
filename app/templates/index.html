@@ -47,6 +47,7 @@
       </div>
       <label>Categoria<select id="category-select" required><option value="">Selecione uma categoria</option></select></label>
       <label>Subcategoria<select name="subcategory_id" id="subcategory-select" required disabled><option value="">Selecione uma subcategoria</option></select></label>
+      <label>Estabelecimento<input name="establishment_name" id="establishment-input" list="establishment-options" maxlength="120" required placeholder="Ex.: Assaí, farmácia, posto"><datalist id="establishment-options"></datalist></label>
       <label>Forma de pagamento<select name="payment_method_id" id="payment-method-select" required><option value="">Selecione uma forma de pagamento</option></select></label>
       <label>Observação <span class="optional">(opcional)</span><textarea name="notes" rows="2" placeholder="Detalhes adicionais"></textarea></label>
       <p class="form-error" id="form-error" role="alert" hidden></p>

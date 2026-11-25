@@ -1,5 +1,6 @@
 from datetime import date
 from uuid import UUID
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -8,6 +9,7 @@ class ExpenseCreate(BaseModel):
     amount_cents: int = Field(gt=0)
     expense_date: date
     subcategory_id: UUID
+    establishment_id: UUID
     payment_method_id: UUID
     notes: str | None = None
 
@@ -17,6 +19,7 @@ class ExpenseUpdate(BaseModel):
     amount_cents: int | None = Field(default=None, gt=0)
     expense_date: date | None = None
     subcategory_id: UUID | None = None
+    establishment_id: UUID | None = None
     payment_method_id: UUID | None = None
     notes: str | None = None
 
@@ -28,5 +31,6 @@ class ExpenseRead(BaseModel):
     amount_cents: int
     expense_date: date
     subcategory_id: UUID
+    establishment_id: UUID
     payment_method_id: UUID
     notes: str | None

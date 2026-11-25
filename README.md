@@ -36,7 +36,7 @@ Depois de configurar a conexão:
 alembic upgrade head
 ```
 
-A migration inicial cria categorias, subcategorias, formas de pagamento e despesas. Também insere as formas de pagamento iniciais: PIX, Boleto, Cartão de crédito, Cartão de débito e Dinheiro / Outro.
+A migration inicial cria categorias, subcategorias, formas de pagamento e despesas. A migration seguinte adiciona estabelecimentos e torna seu vínculo obrigatório nas despesas. Também insere as formas de pagamento iniciais: PIX, Boleto, Cartão de crédito, Cartão de débito e Dinheiro / Outro.
 
 ## Executar
 
@@ -56,11 +56,11 @@ Acesse <http://127.0.0.1:8000>. A documentação da API fica em <http://127.0.0.
 - `POST /api/categories/{id}/subcategories` — adiciona subcategoria.
 - `DELETE /api/categories/subcategories/{id}` — remove subcategoria, desde que não seja a última nem tenha despesas vinculadas.
 - `GET/POST /api/payment-methods` — consulta e cadastra formas de pagamento.
-- `GET/POST /api/expenses` — consulta e cadastra despesas.
+- `GET/POST /api/establishments` — consulta e cadastra estabelecimentos.\n- `GET/POST /api/expenses` — consulta e cadastra despesas (com estabelecimento obrigatório).
 - `PATCH/DELETE /api/expenses/{id}` — altera ou remove despesa.
 - `GET /api/dashboard/monthly` — total do mês e últimas despesas.
 
-Valores monetários são armazenados em centavos inteiros. A despesa referencia uma subcategoria; a categoria é obtida pelo relacionamento da subcategoria, evitando inconsistências entre categoria e subcategoria.
+Valores monetários são armazenados em centavos inteiros. A despesa referencia uma subcategoria e um estabelecimento obrigatório; a categoria é obtida pelo relacionamento da subcategoria, evitando inconsistências entre categoria e subcategoria.
 
 ## Testes
 

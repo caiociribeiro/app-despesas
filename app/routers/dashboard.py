@@ -22,7 +22,7 @@ def monthly_summary(year: int | None = None, month: int | None = None, db: Sessi
     end = date(year, month, monthrange(year, month)[1])
     total = db.scalar(select(func.coalesce(func.sum(Expense.amount_cents), 0)).where(Expense.expense_date.between(start, end)))
     recent = db.scalars(
-        select(Expense).options(joinedload(Expense.subcategory).joinedload(Subcategory.category))
+        select(Expense).options(joinedload(Expense.subcategory).joinedload(Subcategory.category), joinedload(Expense.establishment))
         .where(Expense.expense_date.between(start, end))
         .order_by(Expense.expense_date.desc(), Expense.created_at.desc()).limit(8)
     ).all()
@@ -33,7 +33,8 @@ def monthly_summary(year: int | None = None, month: int | None = None, db: Sessi
         "recent_expenses": [
             {"id": str(item.id), "description": item.description, "amount_cents": item.amount_cents,
              "expense_date": item.expense_date.isoformat(), "subcategory": item.subcategory.name,
-             "category": item.subcategory.category.name, "category_color": item.subcategory.category.color}
+             "category": item.subcategory.category.name, "category_color": item.subcategory.category.color,
+             "establishment": item.establishment.name}
             for item in recent
         ],
     }

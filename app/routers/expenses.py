@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
 from app.database.connection import get_db
-from app.models import Expense, Subcategory, PaymentMethod
+from app.models import Expense, Subcategory, PaymentMethod, Establishment
 from app.schemas.expense import ExpenseCreate, ExpenseRead, ExpenseUpdate
 
 router = APIRouter(prefix="/api/expenses", tags=["expenses"])
@@ -21,6 +21,7 @@ def get_expenses(
     end_date: date | None = None,
     subcategory_id: list[UUID] | None = Query(default=None),
     payment_method_id: list[UUID] | None = Query(default=None),
+    establishment_id: list[UUID] | None = Query(default=None),
     min_cents: int | None = Query(default=None, ge=0),
     max_cents: int | None = Query(default=None, ge=0),
     search: str | None = None,
@@ -35,6 +36,8 @@ def get_expenses(
         query = query.where(Expense.subcategory_id.in_(subcategory_id))
     if payment_method_id:
         query = query.where(Expense.payment_method_id.in_(payment_method_id))
+    if establishment_id:
+        query = query.where(Expense.establishment_id.in_(establishment_id))
     if min_cents is not None:
         query = query.where(Expense.amount_cents >= min_cents)
     if max_cents is not None:

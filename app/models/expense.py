@@ -16,6 +16,7 @@ class Expense(Base):
         CheckConstraint("length(trim(description)) > 0", name="ck_expenses_description_not_empty"),
         Index("ix_expenses_expense_date", "expense_date"),
         Index("ix_expenses_subcategory_date", "subcategory_id", "expense_date"),
+        Index("ix_expenses_establishment_id", "establishment_id"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -23,6 +24,7 @@ class Expense(Base):
     amount_cents: Mapped[int] = mapped_column(Integer, nullable=False)
     expense_date: Mapped[date] = mapped_column(Date, nullable=False)
     subcategory_id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), ForeignKey("subcategories.id", ondelete="RESTRICT"), nullable=False)
+    establishment_id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), ForeignKey("establishments.id", ondelete="RESTRICT"), nullable=False)
     payment_method_id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), ForeignKey("payment_methods.id", ondelete="RESTRICT"), nullable=False)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
@@ -30,3 +32,4 @@ class Expense(Base):
 
     subcategory = relationship("Subcategory")
     payment_method = relationship("PaymentMethod")
+    establishment = relationship("Establishment")

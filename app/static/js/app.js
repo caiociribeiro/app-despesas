@@ -3,6 +3,7 @@ const $ = selector => document.querySelector(selector);
 const dialog = $('#expense-dialog');
 const form = $('#expense-form');
 let categories = [];
+let establishments = [];
 
 function setTheme(theme) {
   document.documentElement.dataset.theme = theme;
@@ -42,7 +43,7 @@ function renderExpenses(expenses) {
     const title = document.createElement('strong');
     title.textContent = item.description;
     const subtitle = document.createElement('span');
-    subtitle.textContent = `${item.category} / ${item.subcategory} · ${new Date(`${item.expense_date}T12:00:00`).toLocaleDateString('pt-BR')}`;
+    subtitle.textContent = `${item.category} / ${item.subcategory} · ${item.establishment} · ${new Date(`${item.expense_date}T12:00:00`).toLocaleDateString('pt-BR')}`;
     details.append(title, subtitle);
     const amount = document.createElement('strong');
     amount.className = 'expense-amount';
@@ -61,6 +62,7 @@ async function loadDashboard() {
 async function loadFormOptions() {
   await Promise.all([
     request('/api/categories').then(data => { categories = data; }),
+    request('/api/establishments').then(data => { establishments = data; renderEstablishmentOptions(); }),
     request('/api/payment-methods').then(methods => {
       const select = $('#payment-method-select');
       select.replaceChildren(new Option('Selecione uma forma de pagamento', ''));
@@ -72,6 +74,29 @@ async function loadFormOptions() {
   categories.forEach(category => select.add(new Option(category.name, category.id)));
   $('#subcategory-select').replaceChildren(new Option('Selecione uma subcategoria', ''));
   $('#subcategory-select').disabled = true;
+}
+
+function renderEstablishmentOptions() {
+  const list = $('#establishment-options');
+  list.replaceChildren(...establishments.map(item => {
+    const option = document.createElement('option');
+    option.value = item.name;
+    return option;
+  }));
+}
+
+async function getOrCreateEstablishment(name) {
+  const normalized = name.trim().toLocaleLowerCase('pt-BR');
+  if (!normalized) throw new Error('Informe o estabelecimento.');
+  const existing = establishments.find(item => item.name.trim().toLocaleLowerCase('pt-BR') === normalized);
+  if (existing) return existing.id;
+  const created = await request('/api/establishments', {
+    method: 'POST',
+    body: JSON.stringify({ name: name.trim() })
+  });
+  establishments.push(created);
+  renderEstablishmentOptions();
+  return created.id;
 }
 
 function openDialog() {
@@ -107,11 +132,13 @@ form.addEventListener('submit', async event => {
     const data = new FormData(form);
     const amount = Math.round(Number(data.get('amount')) * 100);
     if (!Number.isSafeInteger(amount) || amount <= 0) throw new Error('Informe um valor válido.');
+    const establishmentId = await getOrCreateEstablishment(data.get('establishment_name'));
     await request('/api/expenses', {
       method: 'POST',
       body: JSON.stringify({
         description: data.get('description').trim(), amount_cents: amount,
         expense_date: data.get('expense_date'), subcategory_id: data.get('subcategory_id'),
+        establishment_id: establishmentId,
         payment_method_id: data.get('payment_method_id'), notes: data.get('notes') || null
       })
     });
