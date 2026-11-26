@@ -10,6 +10,7 @@ from app.routers.payment_methods import router as payment_methods_router
 from app.routers.expenses import router as expenses_router
 from app.routers.establishments import router as establishments_router
 from app.routers.dashboard import router as dashboard_router
+from app.routers.tags import router as tags_router
 
 app = FastAPI(title=APP_NAME, version="0.2.0")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
@@ -21,6 +22,7 @@ app.include_router(payment_methods_router)
 app.include_router(expenses_router)
 app.include_router(establishments_router)
 app.include_router(dashboard_router)
+app.include_router(tags_router)
 
 
 @app.get("/", response_class=HTMLResponse)

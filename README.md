@@ -74,3 +74,15 @@ pytest
 - Nunca faça commit do `.env`.
 - A conexão com o Neon deve usar TLS (`sslmode=require`).
 - Configure backups independentes do provedor antes de inserir dados financeiros importantes.
+
+## Etiquetas nas despesas
+
+Cada despesa possui uma categoria e uma subcategoria, e pode ter até 10 etiquetas complementares. As etiquetas são reutilizáveis e independentes das categorias (por exemplo, `Fast food` como subcategoria e `Delivery` como etiqueta).
+
+Para aplicar a alteração no banco existente, execute:
+
+```powershell
+alembic upgrade head
+```
+
+A API disponibiliza `GET /api/tags` e `POST /api/tags`. Ao criar ou editar uma despesa, envie `tag_names` como uma lista de nomes; etiquetas inexistentes serão criadas automaticamente e nomes repetidos serão normalizados sem diferenciar maiúsculas/minúsculas.

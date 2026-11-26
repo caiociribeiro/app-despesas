@@ -4,6 +4,8 @@ const dialog = $('#expense-dialog');
 const form = $('#expense-form');
 let categories = [];
 let establishments = [];
+let availableTags = [];
+let selectedTagNames = [];
 
 function setTheme(theme) {
   document.documentElement.dataset.theme = theme;
@@ -45,6 +47,12 @@ function renderExpenses(expenses) {
     const subtitle = document.createElement('span');
     subtitle.textContent = `${item.category} / ${item.subcategory} · ${item.establishment} · ${new Date(`${item.expense_date}T12:00:00`).toLocaleDateString('pt-BR')}`;
     details.append(title, subtitle);
+    if (item.tags?.length) {
+      const tags = document.createElement('span');
+      tags.className = 'expense-tags';
+      tags.textContent = item.tags.map(tag => `#${tag.name}`).join('  ');
+      details.append(tags);
+    }
     const amount = document.createElement('strong');
     amount.className = 'expense-amount';
     amount.textContent = money(item.amount_cents);
@@ -63,6 +71,7 @@ async function loadFormOptions() {
   await Promise.all([
     request('/api/categories').then(data => { categories = data; }),
     request('/api/establishments').then(data => { establishments = data; renderEstablishmentOptions(); }),
+    request('/api/tags').then(data => { availableTags = data; renderTagOptions(); }),
     request('/api/payment-methods').then(methods => {
       const select = $('#payment-method-select');
       select.replaceChildren(new Option('Selecione uma forma de pagamento', ''));
@@ -99,8 +108,59 @@ async function getOrCreateEstablishment(name) {
   return created.id;
 }
 
+function renderTagOptions() {
+  const list = $('#tag-options');
+  list.replaceChildren(...availableTags.map(item => {
+    const option = document.createElement('option');
+    option.value = item.name;
+    return option;
+  }));
+}
+
+function renderSelectedTags() {
+  const container = $('#selected-tags');
+  if (!selectedTagNames.length) {
+    container.innerHTML = '<span class="muted">Nenhuma etiqueta selecionada.</span>';
+    return;
+  }
+  container.replaceChildren(...selectedTagNames.map(name => {
+    const chip = document.createElement('span');
+    chip.className = 'tag-chip';
+    const label = document.createElement('span');
+    label.textContent = `#${name}`;
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.textContent = '×';
+    remove.setAttribute('aria-label', `Remover etiqueta ${name}`);
+    remove.addEventListener('click', () => {
+      selectedTagNames = selectedTagNames.filter(item => item !== name);
+      renderSelectedTags();
+    });
+    chip.append(label, remove);
+    return chip;
+  }));
+}
+
+function addTagFromInput() {
+  const input = $('#tag-input');
+  const name = input.value.trim().replace(/^#/, '');
+  if (!name) return;
+  if (name.length > 50) { alert('A etiqueta deve ter no máximo 50 caracteres.'); return; }
+  if (selectedTagNames.some(item => item.toLocaleLowerCase('pt-BR') === name.toLocaleLowerCase('pt-BR'))) {
+    input.value = '';
+    return;
+  }
+  if (selectedTagNames.length >= 10) { alert('Cada despesa pode ter no máximo 10 etiquetas.'); return; }
+  selectedTagNames.push(name);
+  input.value = '';
+  renderSelectedTags();
+}
+
 function openDialog() {
   form.reset();
+  selectedTagNames = [];
+  renderSelectedTags();
+  $('#tag-input').value = '';
   $('#form-error').hidden = true;
   $('#subcategory-select').replaceChildren(new Option('Selecione uma subcategoria', ''));
   $('#subcategory-select').disabled = true;
@@ -112,6 +172,8 @@ $('#theme-toggle').addEventListener('click', () => {
   setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
 });
 $('#open-expense-form').addEventListener('click', openDialog);
+$('#add-tag').addEventListener('click', addTagFromInput);
+$('#tag-input').addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ',') { event.preventDefault(); addTagFromInput(); } });
 $('#close-expense-form').addEventListener('click', () => dialog.close());
 $('#cancel-expense-form').addEventListener('click', () => dialog.close());
 $('#category-select').addEventListener('change', event => {
@@ -139,7 +201,7 @@ form.addEventListener('submit', async event => {
         description: data.get('description').trim(), amount_cents: amount,
         expense_date: data.get('expense_date'), subcategory_id: data.get('subcategory_id'),
         establishment_id: establishmentId,
-        payment_method_id: data.get('payment_method_id'), notes: data.get('notes') || null
+        payment_method_id: data.get('payment_method_id'), tag_names: selectedTagNames, notes: data.get('notes') || null
       })
     });
     dialog.close();

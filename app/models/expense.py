@@ -33,3 +33,4 @@ class Expense(Base):
     subcategory = relationship("Subcategory")
     payment_method = relationship("PaymentMethod")
     establishment = relationship("Establishment")
+    tags = relationship("Tag", secondary="expense_tags", back_populates="expenses", order_by="Tag.name")
