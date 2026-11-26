@@ -44,7 +44,7 @@ A migration inicial cria categorias, subcategorias, formas de pagamento e despes
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-Acesse <http://127.0.0.1:8000>. O gerenciamento visual de categorias fica em <http://127.0.0.1:8000/categories>. A documentação da API fica em <http://127.0.0.1:8000/docs>.
+Acesse <http://127.0.0.1:8000>. O histórico e filtros de despesas ficam em <http://127.0.0.1:8000/expenses>; o gerenciamento visual de categorias fica em <http://127.0.0.1:8000/categories>. A documentação da API fica em <http://127.0.0.1:8000/docs>.
 
 ## Endpoints disponíveis
 
@@ -56,9 +56,10 @@ Acesse <http://127.0.0.1:8000>. O gerenciamento visual de categorias fica em <ht
 - `POST /api/categories/{id}/subcategories` — adiciona subcategoria.
 - `DELETE /api/categories/subcategories/{id}` — remove subcategoria, desde que não seja a última nem tenha despesas vinculadas.
 - `GET/POST /api/payment-methods` — consulta e cadastra formas de pagamento.
-- `GET/POST /api/establishments` — consulta e cadastra estabelecimentos.\n- `GET/POST /api/expenses` — consulta e cadastra despesas (com estabelecimento obrigatório).
+- `GET/POST /api/establishments` — consulta e cadastra estabelecimentos.\n- `GET/POST /api/expenses` — consulta e cadastra despesas (com estabelecimento obrigatório); a consulta aceita filtros combináveis por período, categoria, subcategoria, etiqueta, estabelecimento, pagamento, faixa de valor e descrição.
 - `PATCH/DELETE /api/expenses/{id}` — altera ou remove despesa.
 - `GET /api/dashboard/monthly` — total do mês e últimas despesas.
+- Interface `/expenses` — histórico de despesas com filtros avançados, totalização dos resultados carregados e exclusão de lançamentos.
 
 Valores monetários são armazenados em centavos inteiros. A despesa referencia uma subcategoria e um estabelecimento obrigatório; a categoria é obtida pelo relacionamento da subcategoria, evitando inconsistências entre categoria e subcategoria.
 

@@ -98,3 +98,34 @@ h2 { margin:0 0 5px; font-size:1.12rem; }
 .tag-chip { display: inline-flex; align-items: center; gap: 7px; padding: 5px 9px; border-radius: 999px; background: var(--surface-muted, #eef2f6); color: var(--text, #243044); font-size: .82rem; }
 .tag-chip button { border: 0; padding: 0; background: transparent; color: inherit; cursor: pointer; font-size: 1rem; line-height: 1; }
 .expense-tags { display: block; margin-top: 4px; color: var(--muted); font-size: .78rem; }
+
+
+/* Expense history and advanced filters */
+.history-summary { display:flex; gap:16px; margin-top:30px; }
+.history-summary > div { flex:1; padding:20px 22px; background:var(--surface); border:1px solid var(--border); border-radius:13px; }
+.history-summary strong { display:block; margin-top:7px; font-size:1.45rem; font-variant-numeric:tabular-nums; }
+.filters-panel { margin-top:24px; padding:22px; background:var(--surface); border:1px solid var(--border); border-radius:13px; }
+.filters-heading { display:flex; justify-content:space-between; align-items:flex-start; gap:15px; margin-bottom:18px; }
+.filters-heading h2 { margin-bottom:5px; }
+.filters-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+.filters-grid label { display:grid; gap:7px; min-width:0; font-size:.82rem; font-weight:650; }
+.filters-grid input,.filters-grid select { width:100%; min-width:0; padding:10px 11px; border:1px solid var(--border); border-radius:8px; background:var(--bg); color:var(--text); }
+.filters-grid select[multiple] { min-height:112px; }
+.filters-grid select option { padding:5px; }
+.filter-actions { display:flex; align-items:end; }
+.history-section { margin-top:35px; }
+.history-pagination { display:flex; justify-content:center; padding:18px; }
+.history-expense-row { align-items:center; }
+.expense-actions { display:flex; align-items:center; }
+.expense-actions button { padding:7px 9px; }
+.expense-notes { color:var(--muted); font-size:.76rem; }
+@media(max-width:900px) { .filters-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:560px) {
+  .filters-grid { grid-template-columns:1fr; }
+  .history-summary { flex-direction:column; }
+  .filters-panel { padding:16px; }
+  .history-expense-row { align-items:flex-start; flex-wrap:wrap; }
+  .history-expense-row .expense-details { flex-basis:calc(100% - 30px); }
+  .history-expense-row .expense-amount { margin-left:23px; }
+  .history-expense-row .expense-actions { margin-left:auto; }
+}

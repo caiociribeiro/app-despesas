@@ -33,3 +33,8 @@ def home(request: Request):
 @app.get("/categories", response_class=HTMLResponse)
 def categories_page(request: Request):
     return templates.TemplateResponse(request=request, name="categories.html", context={"app_name": APP_NAME})
+
+
+@app.get("/expenses", response_class=HTMLResponse)
+def expenses_page(request: Request):
+    return templates.TemplateResponse(request=request, name="expenses.html", context={"app_name": APP_NAME})
